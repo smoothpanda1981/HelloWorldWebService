@@ -1,5 +1,8 @@
 package com.yan.wang.ws.controller;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,57 +19,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yan.wang.ws.db.DbManager;
 import com.yan.wang.ws.model.Employee;
 
 @Controller
 public class EmployeeController {
 	private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
     
-    //Map to store employees, ideally we should use database
-    Map<Integer, Employee> empData = new HashMap<Integer, Employee>();
-     
-    @RequestMapping(value = EmpRestURIConstants.DUMMY_EMP, method = RequestMethod.GET)
-    public @ResponseBody Employee getDummyEmployee() {
-        logger.info("Start getDummyEmployee");
-        Employee emp = new Employee();
-        emp.setId(9999);
-        emp.setName("Dummy");
-        emp.setCreatedDate(new Date());
-        empData.put(9999, emp);
-        return emp;
-    }
-     
-    @RequestMapping(value = EmpRestURIConstants.GET_EMP, method = RequestMethod.GET)
+	Map<Integer, Employee> empData = new HashMap<Integer, Employee>();
+    
+    @RequestMapping(value = EmpRestURIConstants.GET_EMPLOYEE, method = RequestMethod.GET)
     public @ResponseBody Employee getEmployee(@PathVariable("id") int empId) {
         logger.info("Start getEmployee. ID="+empId);
-         
-        return empData.get(empId);
-    }
-     
-    @RequestMapping(value = EmpRestURIConstants.GET_ALL_EMP, method = RequestMethod.GET)
-    public @ResponseBody List<Employee> getAllEmployees() {
-        logger.info("Start getAllEmployees.");
-        List<Employee> emps = new ArrayList<Employee>();
-        Set<Integer> empIdKeys = empData.keySet();
-        for(Integer i : empIdKeys){
-            emps.add(empData.get(i));
-        }
-        return emps;
-    }
-     
-    @RequestMapping(value = EmpRestURIConstants.CREATE_EMP, method = RequestMethod.POST)
-    public @ResponseBody Employee createEmployee(@RequestBody Employee emp) {
-        logger.info("Start createEmployee.");
-        emp.setCreatedDate(new Date());
-        empData.put(emp.getId(), emp);
-        return emp;
-    }
-     
-    @RequestMapping(value = EmpRestURIConstants.DELETE_EMP, method = RequestMethod.PUT)
-    public @ResponseBody Employee deleteEmployee(@PathVariable("id") int empId) {
-        logger.info("Start deleteEmployee.");
-        Employee emp = empData.get(empId);
-        empData.remove(empId);
-        return emp;
+        
+        DbManager dbManager = new DbManager();
+        Connection conn = null;
+		try {
+			conn = dbManager.createConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        Employee emp = dbManager.getEmployee(String.valueOf(empId), conn);
+        
+        return empData.put(emp.getId(), emp);
     }
 }
