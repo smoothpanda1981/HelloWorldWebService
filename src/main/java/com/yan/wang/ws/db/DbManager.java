@@ -17,24 +17,24 @@ import com.yan.wang.ws.model.Employee;
 public class DbManager {
 	 private final static String getEmployee = "select * from employee where id = ";
 	 
-	    public Connection createConnection() throws IOException, ClassNotFoundException, SQLException {
+	    public Connection createConnection() throws IOException, ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
 	 
 	        Connection connection;
 	         
-	        Properties prop = new Properties();
-	        System.out.println("test");
-	        prop.load(new FileInputStream(System.getProperty("user.home") + "/mydb.cfg"));
-	        String host = prop.getProperty("host").toString();
-	        String username = prop.getProperty("username").toString();
-	        String password = prop.getProperty("password").toString();
-	        String driver = prop.getProperty("driver").toString();
-//	        String host = "jdbc:mysql://mysql-ywang.appengine.flow.ch/Recette";
-//	        String username = "root";
-//	        String password = "OrlD5yJBpi";
-//	        String driver = "com.mysql.jdbc.Driver";
+//	        Properties prop = new Properties();
+//	        System.out.println("test");
+//	        prop.load(new FileInputStream(System.getProperty("user.home") + "/mydb.cfg"));
+//	        String host = prop.getProperty("host").toString();
+//	        String username = prop.getProperty("username").toString();
+//	        String password = prop.getProperty("password").toString();
+//	        String driver = prop.getProperty("driver").toString();
+	        String host = "jdbc:mysql://mysql-ywang.appengine.flow.ch/Recette";
+	        String username = "root";
+	        String password = "OrlD5yJBpi";
+	        String driver = "com.mysql.jdbc.Driver";
 	 
 	        
-	        Class.forName(driver);
+	        Class.forName(driver).newInstance();
 	        System.out.println("--------------------------");
 	        System.out.println("DRIVER: " + driver);
 	        connection = DriverManager.getConnection(host, username, password);
