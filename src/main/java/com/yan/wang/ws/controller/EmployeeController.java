@@ -33,14 +33,12 @@ public class EmployeeController {
         logger.info("Start getEmployee. ID="+empId);
         
         DbManager dbManager = new DbManager();
-        Connection conn;
+        Connection conn = null;
         Employee emp = null;
 		try {
 			conn = dbManager.createConnection();
 
 	        emp = dbManager.getEmployee(String.valueOf(empId), conn);
-	        
-	        System.out.println(emp.getId() + " - " + emp.getName());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -51,9 +49,14 @@ public class EmployeeController {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
+		} finally {
+				try {
+					if (conn != null) conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 		
-        
         return empData.put(emp.getId(), emp);
     }
 }

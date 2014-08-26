@@ -15,10 +15,10 @@ public class DbManager {
 	 
 	    public Connection createConnection() throws IOException, ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
 	 
-	    	String URL =  "jdbc:mysql://mysql-ywang.appengine.flow.ch/Recette";
+	    	String URL =  "jdbc:mysql://www.db4free.net:3306/yanwangdb";
 	    	
 	    	Class.forName("com.mysql.jdbc.Driver"); 
-	        Connection connection = DriverManager.getConnection(URL, "root", "OrlD5yJBpi");
+	        Connection connection = DriverManager.getConnection(URL, "ywang", "wafaouafah79");
 	        System.out.println("CONNECTION: " + connection);
 	 
 	        return connection;
@@ -26,21 +26,42 @@ public class DbManager {
 	 
 	    public Employee getEmployee(String id, Connection conn) {
 	    	Employee emp = new Employee();
+	    	Statement statement = null;
+	    	ResultSet rs = null;
 	    	try {
-	            Statement statement = conn.createStatement();
-	            String sql = getEmployee + "'" + id + "'";
-	            ResultSet rs = statement.executeQuery(sql);
-	            int iden = Integer.parseInt(rs.getString(0));
-	            String name = rs.getString(1);
-	            Date date = rs.getDate(2);
+	            statement = conn.createStatement();
+	            String sql = getEmployee + " " + id + " ";
+	            rs = statement.executeQuery(sql);
 	            
-	            emp.setId(iden);
-	            emp.setName(name);
-	            emp.setCreatedDate(date);
+	            while (rs.next()) {
+//	            	System.out.println("id = " + rs.getInt(1));
+	            	int iden = rs.getInt("id");
+		            String name = rs.getString("name");
+		            Date date = rs.getDate("date");
+		            
+		            System.out.println(iden);
+		            System.out.println(name);
+		            System.out.println(date.toString());
+		            
+		            emp.setId(iden);
+		            emp.setName(name);
+		            emp.setCreatedDate(date);
+	            }
 	            
 	            
 	        } catch (SQLException ex) {
 	            ex.printStackTrace();
+	        } finally {
+	        	try {
+	        		if (statement != null) {
+	        			statement.close();
+	        		}
+	        		if (rs != null) {
+	        			rs.close();
+	        		}
+	        	} catch (SQLException e) {
+	        		e.printStackTrace();
+	        	}
 	        }
 			return emp;
 	    }
