@@ -57,6 +57,7 @@ public class EmployeeController {
 				}
 		}
 		
-        return empData.put(emp.getId(), emp);
+//        return empData.put(emp.getId(), emp);
+		return emp;
     }
 }
